@@ -1,4 +1,4 @@
-.App {
+/* .App {
   text-align: center;
 }
 
@@ -35,4 +35,30 @@
   to {
     transform: rotate(360deg);
   }
+} */
+
+.App {
+  text-align: center;
+  margin-top: 50px;
 }
+
+input {
+  padding: 8px;
+  width: 200px;
+  margin-right: 10px;
+}
+
+button {
+  padding: 8px 12px;
+  margin-left: 5px;
+}
+
+ul {
+  list-style: none;
+  padding: 0;
+}
+
+li {
+  margin: 10px 0;
+}
+
