@@ -1,42 +1,55 @@
-// import logo from './logo.svg';
-// import './App.css';
-
-// function App() {
-//   return (
-//     <div className="App">
-//       <header className="App-header">
-//         <img src={logo} className="App-logo" alt="logo" />
-//         <p>
-//           Edit <code>src/App.js</code> and save to reload.
-//         </p>
-//         <a
-//           className="App-link"
-//           href="https://reactjs.org"
-//           target="_blank"
-//           rel="noopener noreferrer"
-//         >
-//           Learn React
-//         </a>
-//       </header>
-//     </div>
-//   );
-// }
-
-// export default App;
-
-import React, { useState } from 'react';
+import React, { useState, useEffect } from 'react';
 import './App.css';
+import { collection, addDoc, getDocs } from "firebase/firestore";
+import { db } from "./firebase"; // ← firebase.js のパス
+
 
 function App() {
-  const [task, setTask] = useState('');
   const [todos, setTodos] = useState([]);
+  const [inputText, setInputText] = useState("");
 
-  const handleAdd = () => {
-    // 空白orホワイトスペースなら無効
-    if (task.trim() === '') return;
-    setTodos([...todos, { text: task, done: false }]);
-    setTask('');
+  // アプリ起動時にFirestoreからデータを取得
+  useEffect(() => {
+    fetchTodos();
+  }, []);
+
+  // Firestoreからタスクを取得
+  const fetchTodos = async () => {
+    try {
+      const querySnapshot = await getDocs(collection(db, "todos"));
+      const data = querySnapshot.docs.map((doc) => ({
+        id: doc.id,
+        ...doc.data(),
+      }));
+      setTodos(data);
+    } catch (error) {
+      console.error("データ取得エラー：", error);
+    }
   };
+
+  // 新しいタスクをFirestoreに追加
+  const addTodo = async () => {
+    if (!inputText.trim()) return;
+
+    try {
+      await addDoc(collection(db, "todos"), {
+        text: inputText,
+        createdAt: new Date(),
+      });
+      setInputText(""); // 入力欄をクリア
+      fetchTodos();     // リストを再取得して更新
+    } catch (error) {
+      console.error("追加エラー：", error);
+    }
+  };
+
+
+  // const handleAdd = () => {
+  //   // 空白orホワイトスペースなら無効
+  //   if (task.trim() === '') return;
+  //   setTodos([...todos, { text: task, done: false }]);
+  //   setTask('');
+  // };
 
   const handleDelete = (index) => {
     const newTodos = [...todos];
@@ -55,11 +68,12 @@ function App() {
       <h1>📋 My ToDo App</h1>
       <input
         type="text"
-        value={task}
+        value={inputText}
         placeholder="タスクを入力"
-        onChange={(e) => setTask(e.target.value)}
+        onChange={(e) => setInputText(e.target.value)}
       />
-      <button onClick={handleAdd}>追加</button>
+      <button onClick={addTodo}>追加</button>
+      {/* <button onClick={handleAdd}>追加</button> */}
 
       <ul>
         {todos.map((todo, index) => (
@@ -79,5 +93,3 @@ function App() {
 }
 
 export default App;
-
-// test
