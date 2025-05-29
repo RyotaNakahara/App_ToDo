@@ -1,6 +1,6 @@
 import React, { useState, useEffect } from 'react';
 import './App.css';
-import { collection, addDoc, getDocs } from "firebase/firestore";
+import { collection, addDoc, getDocs, deleteDoc, doc } from "firebase/firestore";
 import { db } from "./firebase"; // ← firebase.js のパス
 
 
@@ -32,16 +32,35 @@ function App() {
     if (!inputText.trim()) return;
 
     try {
-      await addDoc(collection(db, "todos"), {
+      const docRef = await addDoc(collection(db, "todos"), {
         text: inputText,
         createdAt: new Date(),
+        done: false,
       });
+
+      const newTodo = {
+        id: docRef.id,
+        text: inputText,
+        done: false,
+      };
+
+      setTodos([...todos, newTodo]);
       setInputText(""); // 入力欄をクリア
       fetchTodos();     // リストを再取得して更新
     } catch (error) {
       console.error("追加エラー：", error);
     }
   };
+
+  // タスクをFirebaseから削除
+  const deleteTodo = async (id) => {
+    try{
+      await deleteDoc(doc(db, "todos", id));
+      fetchTodos();
+    } catch (error) {
+      console.log("削除エラー", error);
+    }
+  }
 
 
   // const handleAdd = () => {
@@ -51,11 +70,11 @@ function App() {
   //   setTask('');
   // };
 
-  const handleDelete = (index) => {
-    const newTodos = [...todos];
-    newTodos.splice(index, 1);
-    setTodos(newTodos);
-  };
+  // const handleDelete = (index) => {
+  //   const newTodos = [...todos];
+  //   newTodos.splice(index, 1);
+  //   setTodos(newTodos);
+  // };
 
   const handleToggle = (index) => {
     const newTodos = [...todos];
@@ -77,14 +96,14 @@ function App() {
 
       <ul>
         {todos.map((todo, index) => (
-          <li key={index}>
+          <li key={todo.id}>
             <span
               style={{ textDecoration: todo.done ? 'line-through' : 'none', cursor: 'pointer' }}
               onClick={() => handleToggle(index)}
             >
               {todo.done ? '✅' : '◻'} {todo.text}
             </span>
-            <button onClick={() => handleDelete(index)}>削除</button>
+            <button onClick={() => deleteTodo(todo.id)}>削除</button>
           </li>
         ))}
       </ul>
