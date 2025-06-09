@@ -1,9 +1,35 @@
 name: Node.js CI
 
 on:
+  # プッシュ時の自動実行
   push:
     branches:
+      - main
       - "feature/**"
+      - "!feature/**-alpha"
+    paths:
+      - "src/**"
+      - "tests/**"
+      - "**.js"
+    
+    # プルリクエスト時の自動実行
+  pull_request:
+    branches:
+      - main
+      - develop
+
+  # 手動実行用
+  workflow_dispatch:
+    inputs:
+      deploy_target:
+        description: "デプロイ先環境"
+        required: true
+        default: "staging"
+        type: choice
+        options:
+          - development
+          - staging
+          - production
 
 jobs:
   build:
