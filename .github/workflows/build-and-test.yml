@@ -11,8 +11,8 @@ on:
       - "src/**"
       - "tests/**"
       - "**.js"
-    
-    # プルリクエスト時の自動実行
+
+  # プルリクエスト時の自動実行
   pull_request:
     branches:
       - main
