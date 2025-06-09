@@ -7,11 +7,11 @@ on:
       - main
       - "feature/**"
       - "!feature/**-alpha"
-    paths:
-      - "src/**"
-      - "tests/**"
-      - "**.js"
-      - "**.yml"
+    # paths:
+    #   - "src/**"
+    #   - "tests/**"
+    #   - "**.js"
+    #   - "**.yml"
 
   # プルリクエスト時の自動実行
   pull_request:

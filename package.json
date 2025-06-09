@@ -15,6 +15,7 @@
   },
   "scripts": {
     "start": "react-scripts start",
+    "setup": "react-scripts setup",
     "build": "react-scripts build",
     "test": "jest",
     "eject": "react-scripts eject"
