@@ -6,6 +6,17 @@ on:
     branches:
       - main
       - "feature/**"
+      - "!feature/**-alpha"
+    paths:
+      - "src/**"
+      - "tests/**"
+      - "**.js"
+
+# プルリクエスト時の自動実行
+  pull_request:
+    branches:
+      - main
+      - develop
 
 jobs:
   build:
