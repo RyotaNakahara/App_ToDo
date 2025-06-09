@@ -7,11 +7,11 @@ on:
       - main
       - "feature/**"
       - "!feature/**-alpha"
-    # paths:
-    #   - "src/**"
-    #   - "tests/**"
-    #   - "**.js"
-    #   - "**.yml"
+    paths:
+      - "src/**"
+      - "tests/**"
+      - "**.js"
+      - "**.yml"
 
   # プルリクエスト時の自動実行
   pull_request:
@@ -57,5 +57,14 @@ jobs:
     needs: setup
     runs-on: ubuntu-latest
     steps:
+      - name: Checkout repository
+        uses: actions/checkout@v4
+
+      - name: Set up Node.js
+        uses: actions/setup-node@v4
+        with:
+          node-version: "20"
+          cache: "npm"
+
       - name: Run tests
         run: npm test
