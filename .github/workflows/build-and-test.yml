@@ -1,7 +1,7 @@
 name: Node.js CI
 
 on:
-  # プッシュ時の自動実行
+# プッシュ時の自動実行
   push:
     branches:
       - main
@@ -12,13 +12,13 @@ on:
       - "tests/**"
       - "**.js"
 
-  # プルリクエスト時の自動実行
+# プルリクエスト時の自動実行
   pull_request:
     branches:
       - main
       - develop
 
-  # 手動実行用
+# 手動実行用
   workflow_dispatch:
     inputs:
       deploy_target:
