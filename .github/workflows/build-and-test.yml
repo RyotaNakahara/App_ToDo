@@ -36,7 +36,7 @@ jobs:
   setup:
     name: Build and Test
     runs-on: ubuntu-latest
-
+    timeout-minutes: 120
     steps:
       - name: Checkout repository
         uses: actions/checkout@v4
@@ -56,7 +56,14 @@ jobs:
   build:
     needs: setup
     runs-on: ubuntu-latest
-
     steps:
       - name: Checkout repository
         uses: actions/checkout@v4
+
+  failure:
+    needs: build
+    runs-on: ubuntu-latest
+    if: failure()
+    steps:
+      - name: Send failure notification
+        run: echo "Test job failed"
