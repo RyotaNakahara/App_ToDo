@@ -6,7 +6,7 @@ on:
     branches:
       - main
       - "feature/**"
-      - "!feature/**-alpha"
+    #   - "!feature/**-alpha"
     paths:
       - "src/**"
       - "tests/**"
