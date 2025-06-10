@@ -1,7 +1,7 @@
 import React, { useState, useEffect } from 'react';
-import './App.css';
+import './styles/App.css';
 import { collection, addDoc, getDocs, deleteDoc, updateDoc, doc } from "firebase/firestore";
-import { db } from "./firebase"; // ← firebase.js のパス
+import { db } from "./firebase/firebase.js"; // ← firebase.js のパス
 
 
 function App() {
@@ -63,20 +63,6 @@ function App() {
       console.log("削除エラー", error);
     }
   }
-
-
-  // const handleAdd = () => {
-  //   // 空白orホワイトスペースなら無効
-  //   if (task.trim() === '') return;
-  //   setTodos([...todos, { text: task, done: false }]);
-  //   setTask('');
-  // };
-
-  // const handleDelete = (index) => {
-  //   const newTodos = [...todos];
-  //   newTodos.splice(index, 1);
-  //   setTodos(newTodos);
-  // };
 
   const handleToggle = async(id) => {
     try {
