@@ -7,6 +7,8 @@ import { db } from "./firebase"; // ← firebase.js のパス
 function App() {
   const [todos, setTodos] = useState([]);
   const [inputText, setInputText] = useState("");
+  const [editId, setEditId] = useState(null);
+  const [editText, setEditText] = useState("");
 
   // アプリ起動時にFirestoreからデータを取得
   useEffect(() => {
@@ -95,6 +97,20 @@ function App() {
     }
   };
 
+  const handleUpdate = async () => {
+    try {
+      await updateDoc(doc(db, "todos", editId), {
+        text: editText
+      });
+
+      setEditId(null);
+      setEditText("");
+      fetchTodos(); // 最新のリストを取得して画面更新
+    } catch (error) {
+      console.error("更新エラー：", error);
+    }
+  };
+
   return (
     <div className="App">
       <h1>📋 My ToDo App</h1>
@@ -105,10 +121,25 @@ function App() {
         onChange={(e) => setInputText(e.target.value)}
       />
       <button onClick={addTodo}>追加</button>
+
+      {editId && (
+        <div>
+          <input
+            type="text"
+            value={editText}
+            onChange={(e) => setEditText(e.target.value)}
+          />
+          <button onClick={handleUpdate}>保存</button>
+          <button onClick={() => {
+            setEditId(null);
+            setEditText("");
+          }}>キャンセル</button>
+        </div>
+      )}
       {/* <button onClick={handleAdd}>追加</button> */}
 
       <ul>
-        {todos.map((todo, index) => (
+        {todos.map((todo) => (
           <li key={todo.id}>
             <span
               style={{ textDecoration: todo.done ? 'line-through' : 'none', cursor: 'pointer' }}
@@ -116,6 +147,10 @@ function App() {
             >
               {todo.done ? '✅' : '◻'} {todo.text}
             </span>
+            <button onClick={() => {
+              setEditId(todo.id);
+              setEditText(todo.text);
+            }}>編集</button>
             <button onClick={() => deleteTodo(todo.id)}>削除</button>
           </li>
         ))}
