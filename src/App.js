@@ -1,6 +1,6 @@
 import React, { useState, useEffect } from 'react';
 import './App.css';
-import { collection, addDoc, getDocs, deleteDoc, doc } from "firebase/firestore";
+import { collection, addDoc, getDocs, deleteDoc, updateDoc, doc } from "firebase/firestore";
 import { db } from "./firebase"; // ← firebase.js のパス
 
 
@@ -76,10 +76,23 @@ function App() {
   //   setTodos(newTodos);
   // };
 
-  const handleToggle = (index) => {
-    const newTodos = [...todos];
-    newTodos[index].done = !newTodos[index].done;
-    setTodos(newTodos);
+  const handleToggle = async(id) => {
+    try {
+      // ID取得
+      const targetTodo = todos.find((todo) => todo.id === id);
+      if (!targetTodo) return;
+
+      // Firestore側更新
+      updateDoc(doc(db, "todos", id), {
+        done: !targetTodo.done,
+      });
+
+      // ローカルstate更新
+      fetchTodos();
+
+    } catch (error) {
+      console.error("完了状態の更新エラー:", error);
+    }
   };
 
   return (
@@ -99,7 +112,7 @@ function App() {
           <li key={todo.id}>
             <span
               style={{ textDecoration: todo.done ? 'line-through' : 'none', cursor: 'pointer' }}
-              onClick={() => handleToggle(index)}
+              onClick={() => handleToggle(todo.id)}
             >
               {todo.done ? '✅' : '◻'} {todo.text}
             </span>
