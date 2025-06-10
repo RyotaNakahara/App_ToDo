@@ -1,3 +1,6 @@
+import TodoInput from "./components/TodoInput";
+import TodoList from "./components/TodoList";
+import EditTodo from "./components/EditTodo";
 import useTodos from "./hooks/useTodos";
 import './styles/App.css';
 
@@ -20,31 +23,31 @@ function App() {
   return (
     <div className="App">
       <h1>📋 My ToDo App</h1>
-      <input
-        type="text"
-        value={inputText}
-        placeholder="タスクを入力"
-        onChange={(e) => setInputText(e.target.value)}
-      />
-      <button onClick={addTodo}>追加</button>
 
-      {editId && (
-        <div>
-          <input
-            type="text"
-            value={editText}
-            onChange={(e) => setEditText(e.target.value)}
-          />
-          <button onClick={handleUpdate}>保存</button>
-          <button onClick={() => {
-            setEditId(null);
-            setEditText("");
-          }}>キャンセル</button>
-        </div>
+      {!editId ? (
+        <TodoInput
+        inputText={inputText}
+        setInputText={setInputText}
+        addTodo={addTodo}
+        />
+      ) : (
+        <EditTodo
+        editText={editText}
+        setEditText={setEditText}
+        handleUpdate={handleUpdate}
+        setEditId={setEditId}
+        />
       )}
-      {/* <button onClick={handleAdd}>追加</button> */}
 
-      <ul>
+      <TodoList
+        todos={todos}
+        setEditText={setEditText}
+        setEditId={setEditId}
+        handleToggle={handleToggle}
+        deleteTodo={deleteTodo}
+      />
+
+      {/* <ul>
         {todos.map((todo) => (
           <li key={todo.id}>
             <span
@@ -60,7 +63,7 @@ function App() {
             <button onClick={() => deleteTodo(todo.id)}>削除</button>
           </li>
         ))}
-      </ul>
+      </ul> */}
     </div>
   );
 }
