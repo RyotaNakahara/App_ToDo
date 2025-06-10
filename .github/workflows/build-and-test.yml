@@ -1,0 +1,69 @@
+name: Node.js CI
+
+on:
+  # プッシュ時の自動実行
+  push:
+    branches:
+      - main
+      - "feature/**"
+      - "!feature/**-alpha"
+    paths:
+      - "src/**"
+      - "tests/**"
+      - "**.js"
+      - "**.yml"
+
+  # プルリクエスト時の自動実行
+  pull_request:
+    branches:
+      - main
+      - develop
+
+  # 手動実行用
+  workflow_dispatch:
+    inputs:
+      deploy_target:
+        description: "デプロイ先環境"
+        required: true
+        default: "staging"
+        type: choice
+        options:
+          - development
+          - staging
+          - production
+
+jobs:
+  setup:
+    name: Build and Test
+    runs-on: ubuntu-latest
+    timeout-minutes: 120
+    steps:
+      - name: Checkout repository
+        uses: actions/checkout@v4
+
+      - name: Set up Node.js
+        uses: actions/setup-node@v4
+        with:
+          node-version: "20"
+          cache: "npm"
+
+      - name: Install dependencies
+        run: npm install
+        
+      - name: Run tests
+        run: npm test
+    
+  build:
+    needs: setup
+    runs-on: ubuntu-latest
+    steps:
+      - name: Checkout repository
+        uses: actions/checkout@v4
+
+  failure:
+    needs: build
+    runs-on: ubuntu-latest
+    if: failure()
+    steps:
+      - name: Send failure notification
+        run: echo "Test job failed"
