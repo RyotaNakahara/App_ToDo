@@ -1,4 +1,4 @@
-const { sum } = require('../src/sum');
+const { sum } = require('../src/hooks/sum');
 
 test('adds 1 + 2 to equal 3', () => {
   expect(sum(1, 2)).toBe(3);
