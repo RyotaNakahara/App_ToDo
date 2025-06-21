@@ -67,7 +67,7 @@ jobs:
           touch "backup_${{ steps.timestamp.outputs.time }}.txt"
 
   failure:
-    needs: build
+    # needs: build
     runs-on: ubuntu-latest
     # if: failure()
     steps:
@@ -97,3 +97,15 @@ jobs:
       - name: Final cleanup
         if: always()
         run: echo "Cleaning up resources"
+  
+  debug-output:
+    runs-on: ubuntu-latest
+    steps:
+      - name: Debug workflow information
+        run: |
+          echo "::debug::Starting process"
+          echo "::debug::Current working directory: $(pwd)"
+          echo "::debug::Files in directory:"
+          ls -la | while read line; do
+            echo "::debug::$line"
+          done
