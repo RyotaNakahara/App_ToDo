@@ -58,7 +58,13 @@ jobs:
     runs-on: ubuntu-latest
     steps:
       - name: Checkout repository
-        uses: actions/checkout@v4
+        id: timestamp
+        run: echo "time=$(date +'%Y-%m-%d_%H-%M-%S')" >> $GITHUB_OUTPUT
+    
+      - name: Create file with timestamp
+        run: |
+          echo "Creating file at ${{ steps.timestamp.outputs.time }}"
+          touch "backup_${{ steps.timestamp.outputs.time }}.txt"
 
   failure:
     needs: build
