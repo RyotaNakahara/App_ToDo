@@ -69,7 +69,31 @@ jobs:
   failure:
     needs: build
     runs-on: ubuntu-latest
-    if: failure()
+    # if: failure()
     steps:
-      - name: Send failure notification
-        run: echo "Test job failed"
+      - name: Setup
+        id: setup
+        run: echo "Setting up environment"
+
+      - name: Process
+        id: process
+        continue-on-error: true
+        run: |
+          echo "Processing data"
+          exit 1
+
+      - name: Success notification
+        if: success()
+        run: echo "Process completed successfully"
+
+      - name: Warning notification
+        if: steps.process.outcome == 'failure' && steps.process.conclusion == 'success'
+        run: echo "Process completed with warnings"
+
+      - name: Failure notification
+        if: failure() && !cancelled()
+        run: echo "Process failed"
+
+      - name: Final cleanup
+        if: always()
+        run: echo "Cleaning up resources"
