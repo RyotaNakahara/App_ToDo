@@ -109,3 +109,22 @@ jobs:
           ls -la | while read line; do
             echo "::debug::$line"
           done
+
+  actions-fileCheck:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+
+      - name: Find configuration file
+        id: find-config
+        uses: actions/find-file@v1
+        with:
+          pattern: "config.*.json"
+
+      - name: Use search result
+        run: |
+          if [[ -n "${{ steps.find-config.outputs.path }}" ]]; then
+            echo "Found configuration file at: ${{ steps.find-config.outputs.path }}"
+          else
+            echo "Configuration file not found"
+          fi
