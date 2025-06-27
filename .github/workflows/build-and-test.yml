@@ -60,17 +60,17 @@ jobs:
       - name: Build
         run: npm run build
       - name: Upload build result
-        uses: actions/upload-artifact@v3
+        uses: actions/upload-artifact@v4
         with:
           name: build-files
           path: dist
 
   deploy:
-    needs: build
+    needs: build2
     runs-on: ubuntu-latest
     steps:
       - name: Download build result
-        uses: actions/download-artifact@v3
+        uses: actions/download-artifact@v4
         with:
           name: build-files
           path: dist
