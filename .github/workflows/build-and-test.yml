@@ -33,7 +33,7 @@ on:
           - production
 
 jobs:
-  setup:
+  build:
     name: Build and Test
     runs-on: ubuntu-latest
     timeout-minutes: 120
@@ -52,9 +52,31 @@ jobs:
         
       - name: Run tests
         run: npm test
-    
-  build:
-    needs: setup
+
+  build2:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+      - name: Build
+        run: npm run build
+      - name: Upload build result
+        uses: actions/upload-artifact@v3
+        with:
+          name: build-files
+          path: dist
+
+  deploy:
+    needs: build
+    runs-on: ubuntu-latest
+    steps:
+      - name: Download build result
+        uses: actions/download-artifact@v3
+        with:
+          name: build-files
+          path: dist
+        
+  test:
+    needs: build
     runs-on: ubuntu-latest
     steps:
       - uses: actions/checkout@v4
