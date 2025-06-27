@@ -1,4 +1,4 @@
-// import React, { useState, useEffect } from 'react';
+import { useState, useEffect } from 'react';
 import { db } from "../firebase/firebase"; // ← firebase.js のパス
 import { collection, 
   addDoc, 
