@@ -33,7 +33,7 @@ on:
           - production
 
 jobs:
-  setup:
+  build:
     name: Build and Test
     runs-on: ubuntu-latest
     timeout-minutes: 120
@@ -52,18 +52,113 @@ jobs:
         
       - name: Run tests
         run: npm test
-    
-  build:
-    needs: setup
+
+  build2:
     runs-on: ubuntu-latest
     steps:
-      - name: Checkout repository
-        uses: actions/checkout@v4
+      - uses: actions/checkout@v4
 
-  failure:
+      - name: Set up Node.js
+        uses: actions/setup-node@v4
+        with:
+          node-version: '20'
+          cache: 'npm'
+
+      - name: Install dependencies
+        run: npm ci
+
+      - name: Build
+        run: npm run build
+
+      - name: Upload build result
+        uses: actions/upload-artifact@v4
+        with:
+          name: build-files
+          path: build
+
+  deploy:
+    needs: build2
+    runs-on: ubuntu-latest
+    steps:
+      - name: Download build result
+        uses: actions/download-artifact@v4
+        with:
+          name: build-files
+          path: build
+        
+  test:
     needs: build
     runs-on: ubuntu-latest
-    if: failure()
     steps:
-      - name: Send failure notification
-        run: echo "Test job failed"
+      - uses: actions/checkout@v4
+      - name: Checkout repository
+        id: timestamp
+        run: echo "time=$(date +'%Y-%m-%d_%H-%M-%S')" >> $GITHUB_OUTPUT
+    
+      - name: Create file with timestamp
+        run: |
+          echo "Creating file at ${{ steps.timestamp.outputs.time }}"
+          touch "backup_${{ steps.timestamp.outputs.time }}.txt"
+
+  failure:
+    # needs: build
+    runs-on: ubuntu-latest
+    # if: failure()
+    steps:
+      - name: Setup
+        id: setup
+        run: echo "Setting up environment"
+
+      - name: Process
+        id: process
+        continue-on-error: true
+        run: |
+          echo "Processing data"
+          exit 1
+
+      - name: Success notification
+        if: success()
+        run: echo "Process completed successfully"
+
+      - name: Warning notification
+        if: steps.process.outcome == 'failure' && steps.process.conclusion == 'success'
+        run: echo "Process completed with warnings"
+
+      - name: Failure notification
+        if: failure() && !cancelled()
+        run: echo "Process failed"
+
+      - name: Final cleanup
+        if: always()
+        run: echo "Cleaning up resources"
+  
+  debug-output:
+    runs-on: ubuntu-latest
+    steps:
+      - name: Debug workflow information
+        run: |
+          echo "::debug::Starting process"
+          echo "::debug::Current working directory: $(pwd)"
+          echo "::debug::Files in directory:"
+          ls -la | while read line; do
+            echo "::debug::$line"
+          done
+
+  # actions-fileCheck:
+  #   runs-on: ubuntu-latest
+  #   steps:
+  #     - uses: actions/checkout@v4
+
+  #     - name: Find configuration file
+  #       id: find-config
+  #       uses: actions/find-file@v1
+  #       with:
+  #         pattern: "config.*.json"
+
+  #     - name: Use search result
+  #       run: |
+  #         if [[ -n "${{ steps.find-config.outputs.path }}" ]]; then
+  #           echo "Found configuration file at: ${{ steps.find-config.outputs.path }}"
+  #         else
+  #           echo "Configuration file not found"
+  #         fi
